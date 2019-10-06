@@ -240,12 +240,163 @@ continue 문
 
 ## 타입 변환이란?
 
+명시적 타입 변환(타입 캐스팅): 개발자가 의도적으로 값의 타입 변환
 
+암묵적 타입 변환(타입 강제 변환): 개발자의 의도와 상관없이 자바스크립트 엔진에 의해 암무적으로 타입 자동 변환
 
 
 
 ## 암묵적 타입 변환
 
+### 문자열 타입으로 변환
+
+'+' -> 피연산자 중 하나 이상 문자열이면 문자열 연결 연산자로 동작
+
+
+
+### 숫자 타입으로 변환
+
+'-', '*' -> 산술 연산자로 동작
+
+'>' -> 피연산자의 크기를 비교하므로 표현식을 평가하기 위해 숫자 타입이 아닌 피연산자를 숫자 타입으로 암묵적 타입 변환
+
+'+' -> 단항 연산자의 경우 숫자 타입이 아닌 피연산자를 숫자 타입으로 암묵적 타입 변환
+
+
+
+' ', [ ], null, false -> 0으로 변환
+
+true -> 1로 변환
+
+객체, 빈 배열이 아닌 배열, undefined -> NaN(숫자로 변환되지 x)
+
+
+
+### 불리언 타입으로 변환
+
+if 문, for 문과 같은 제어문, 삼항 조건 연산자의 조건식 평가 결과를 암묵적 타입 변환
+
+
+
+불리언 타입이 아닌 값을 Truthy 값 또는 Falsy 값으로 구분
+
+- Truthy 값 -> true로 변환
+
+- Falsy 값 -> false로 변환 예) false, undefined, null, 0, -0, NaN, ' '
+
+
+
+함수
+
+- 어떤 작업을 수행하기 위해 필요한 문들의 집합을 정의한 코드 블록
+- 이름과 매개변수를 가짐
+- 필요할 때 호출하여 일괄적으로 실행 가능
+
+
+
 ## 명시적 타입 변환
 
+1. 래퍼 객체 생성하기 위해 사용하는 표준 빌트인 생성자 함수(문자열, 숫자, 불리언)를 new 연산자 없이 호출
+2. 빌트인 메소드 사용
+3. 암묵적 타입 변환 이용
+
+
+
+래퍼 객체: 원시값을 감싸는 객체(원시값을 객체처럼 사용)
+
+
+
+### 문자열 타입으로 변환
+
+1. String 생성자 함수를 new 연산자 없이 호출
+
+   - String(1)
+   - String(NaN)
+   - String(true)
+
+2. Object.prototype.toString 메소드 사용
+
+   - (1).toString()
+   - (NaN).toString()
+   - (true).toString()
+
+3. 문자열 연결 연산자 이용
+
+   - 1 + ''
+
+   - NaN + ''
+
+   - true + ''
+
+     
+
+### 숫자 타입으로 변환
+
+1. Number 생성자 함수를 new 연산자 없이 호출
+   - Number('-1')
+   - Number('10.53')
+   - Number(true)
+2. parseInt, parseFloat 함수 사용 (문자열만 변환 가능)
+   - parseInt('-1')
+   - parseFloat('10.53')
+3. '+' 단항 연결 연산자 이용
+   - +'-1'
+   - +'10.53'
+   - +true
+4. '*' 산술 연산자 이용
+   - '-1' * 1
+   - '10.53' * 1
+   - true * 1
+
+
+
+### 불리언 타입으로 변환
+
+1. Boolean 생성자 함수를 new 연산자 없이 호출
+   - Boolean('x') -> true
+   - Boolean('') -> false
+   - Boolean('false') -> true
+   - Boolean(1) -> true
+   - Boolean(NaN) -> false
+   - Boolean(Infinity) -> true
+   - Boolean(null) -> false
+   - Boolean(undefined) -> false
+   - Boolean([]) -> true
+2. ! 부정 논리 연산자 두 번 사용
+   - !! 'x'
+   - !! ''
+   - !! 'false'
+   - !! 1
+   - !! NaN
+   - !! Infinity
+   - !! null
+   - !! undefined
+   - !! []
+
+
+
+> 빈 문자열(‘’), 빈 배열([]), null, false는 0으로, true는 1로 변환된다. 
+
+> console.log(Boolean([]));        // true
+
+
+
 ## 단축 평가
+
+논리 평가를 결정한 피연산자를 그대로 반환
+
+- 객체가 null인지 확인하고 프로퍼티 참조할 때
+
+- 함수 매개변수에 기본값 설정할 때
+
+
+
+||(논리합) 연산자와 &&(논리곱) 연산자
+
+- true || anything -> 평가 결과 true
+
+- false || anything -> 평가 결과 anything
+
+- true && anything -> 평가 결과 anything
+
+- false && anything -> 평가 결과 false
