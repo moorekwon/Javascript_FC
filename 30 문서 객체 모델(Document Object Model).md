@@ -372,7 +372,7 @@ nodeValue
   console.log(textNode.nodeType);
   
   // 노드의 값을 취득
-  console.log(textNode.nodeValue); // Seoul
+  console.log(textNode.nodeValue);
   // 텍스트를 수정
   textNode.nodeValue = 'Pusan';
   ```
@@ -452,19 +452,258 @@ removeAttribute(attribute)
 - 지정한 어트리뷰트를 제거
 - undefined를 반환
 
-```javascript
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+  <input type="text">
+  <script>
+  const input = document.querySelector('input[type=text]');
+  console.log(input);
 
+  if (!input.hasAttribute('value')) {
+    input.setAttribute('value', 'hello!');
+  }
+
+  console.log(input.getAttribute('value'));
+
+  input.removeAttribute('value');
+
+  console.log(input.hasAttribute('value'));
+  </script>
+  </body>
+</html>
+```
+
+```html
+<!DOCTYPE html>
+<html>
+<body>
+  <input class="password" type="password" value="123">
+  <button class="show">show</button>
+  <script>
+    const $password = document.querySelector('.password');
+    const $show = document.querySelector('.show');
+
+    function makeClickHandler() {
+      let isShow = false;
+      return function () {
+        $password.setAttribute('type', isShow ? 'password' : 'text');
+        isShow = !isShow;
+        $show.innerHTML = isShow ? 'hide' : 'show';
+      };
+    }
+
+    $show.onclick = makeClickHandler();
+  </script>
+</body>
+</html>
 ```
 
 
 
 ### HTML 콘텐츠 조작(Manipulation)
 
+HTML 콘텐츠를 조작할 때 사용 가능한 프로퍼티 또는 메소드
+
+
+
+>  마크업이 포함된 콘텐츠를 추가하는 행위는 [크로스 스크립팅 공격(XSS: Cross-Site Scripting Attacks)](https://namu.wiki/w/XSS)에 취약하므로 주의가 필요하다. 
+
+
+
+textContent
+
+- 요소의 텍스트 콘텐츠를 취득 또는 변경 (마크업은 무시됨)
+
+- 요소에 새로운 텍스트를 할당하면 텍스트를 변경할 수 있음
+
+- 순수한 텍스트만 지정해야 함 (마크업을 포함시키면 문자열로 인식돼 그대로 출력)
+
+- IE9 이상
+
+  ```html
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <style>
+        .red  { color: #ff0000; }
+        .blue { color: #0000ff; }
+      </style>
+    </head>
+    <body>
+      <div>
+        <h1>Cities</h1>
+        <ul>
+          <li id="one" class="red">Seoul</li>
+          <li id="two" class="red">London</li>
+          <li id="three" class="red">Newyork</li>
+          <li id="four">Tokyo</li>
+        </ul>
+      </div>
+      <script>
+      const ul = document.querySelector('ul');
+      console.log(ul.textContent);
+          
+      const one = document.getElementById('one');
+      console.log(one.textContent);
+          
+      one.textContent += ', Korea';
+      console.log(one.textContent);
+          
+      one.textContent = '<h1>Heading</h1>';
+      console.log(one.textContent);
+      </script>
+    </body>
+  </html>
+  ```
+
+
+
+innerText
+
+- 요소의 텍스트 콘텐츠에만 접근 가능
+- 사용하지 않는 것이 좋음
+  - 비표준
+  - CSS에 순종적 (visibility: hidden; 으로 지정돼 있다면 텍스트 반환되지 않음)
+  - textContent 프로퍼티보다 느림 (CSS를 고려해야 하기 때문)
+
+innerHTML
+
+- 해당 요소의 모든 자식 요소를 포함하는 모든 콘텐츠를 하나의 문자열로 취득할 수 있음 (마크업을 포함함)
+
+  ```javascript
+  const ul = document.querySelector('ul');
+  console.log(ul.innerHTML);
+  ```
+
+- 마크업이 포함된 새로운 콘텐츠를 지정하면 새로운 요소를 DOM에 추가할 수 있음
+
+  - 크로스 스크립팅 공격(XSS: Cross-Site Scripting Attacks)에 취약
+
+  ```javascript
+  const one = document.getElementById('one');
+  console.log(one.innerHTML);
+  
+  one.innerHTML += '<em class="blue">, Korea</em>';
+  console.log(one.innerHTML);
+  ```
+
+  
+
 ### DOM 조작 방식
+
+DOM을 직접 조작
+
+- innerHTML 프로퍼티를 사용하지 않고 새로운 콘텐츠를 추가할 수 있는 방법
+- 한 개의 요소를 추가하는 경우 사용
+
+1. 요소 노드 생성 createElement() 메소드를 사용해 새로운 요소 노드를 생성
+   - 인자로 태그 이름 전달
+2. 텍스트 노드 생성 createTextNode() 메소드를 사용해 새로운 텍스트 노드를 생성
+   - 경우에 따라 생략 가능 (생략하는 경우, 콘텐츠가 비어 있는 요소가 됨)
+3. 생성된 요소를 DOM에 추가
+   - appendChild() 메소드를 사용해 생성된 노드를 DOM tree에 추가
+   - removeChild() 메소드를 사용에 노드를 DOM tree에서 삭제
+
+
+
+creatElement(tagName)
+
+- 태그 이름을 인자로 전달해 요소를 생성
+- HTMLElement를 상속받은 객체를 반환
+
+createTextNode(text)
+
+- 텍스트를 인자로 전달해 텍스트 노드를 생성
+- Text 객체를 반환
+
+appendChild(Node)
+
+- 인자로 전달한 노드를 마지막 자식 요소로 DOM 트리에 추가
+- 추가한 노드를 반환
+
+removeChild(Node)
+
+- 인자로 전달한 노드를 DOM 트리에 제거
+- 추가한 노드를 반환
+
+```javascript
+const newElem = document.createElement('li');
+const newText = document.createTextNode('Beijing');
+
+newElem.appendChild(newText);
+
+const container = document.querySelector('ul');
+
+container.appendChild(newElem);
+
+const removeElem = document.getElementById('one');
+
+container.removeChild(removeElem);
+```
+
+
 
 ### insertAdjacentHTML()
 
+insertAdjacentHTML(position, string)
+
+- 인자로 전달한 텍스트를 HTML로 파싱하고, 그 결과로 생성된 노드를 DOM 트리의 지정된 위치에 삽입
+
+- 첫번째 인자: 삽입 위치
+
+  - 올 수 있는 값: 'beforebegin', 'afterbegin', 'beforeend', 'afterend'
+
+    ```javascript
+    const one = document.getElementById('one');
+    
+    one.insertAdjacentHTML('beforeend', '<em class="blue">, Korea</em>');
+    ```
+
+- 두번째 인자: 삽일할 요소를 표현한 문자열
+
+
+
 ### innerHTML vs. DOM 조작 방식 vs. insertAdjacentHTML()
+
+innerHTML
+
+- 장점
+  - DOM 조작 방식에 비해 빠르고 간편
+  - 간편하게 문자열로 정의한 여러 요소를 DOM에 추가할 수 있음
+  - 콘텐츠를 취득할 수 있음
+- 단점
+  - XSS 공격에 취약
+    - 사용자로부터 입력 받은 콘텐츠(untrusted data: 댓글, 사용자 이름, 등)를 추가할 때 주의
+  - 해당 요소의 내용을 덮어쓰기 때문에 비효율적 (HTML을 다시 파싱)
+
+DOM 조작 방식
+
+- 장점
+  - 특정 노드 한 개(노드, 텍스트, 데이터, 등)를 DOM에 추가할 때 적합
+- 단점
+  - innerHTML보다 느리고 더 많은 코드가 필요
+
+
+
+insertAdjacentHTML()
+
+- 장점
+  - 간편하게 문자열로 정의된 여러 요소를 DOM에 추가할 수 있음
+  - 삽입되는 위치를 선정할 수 있음
+- 단점
+  - XSS 공격에 취약
+
+
+
+textContent
+
+- 텍스트를 추가 또는 변경할 때 사용
+
+DOM 조작 방식
+
+- 새로운 요소를 추가 또는 삭제할 때 사용
 
 
 
